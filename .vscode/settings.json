@@ -1,0 +1,11 @@
+{
+    "terminal.integrated.defaultProfile.osx": "zsh",  
+    "editor.semanticTokenColorCustomizations": {
+      "rules": {
+        "*.mutable": {
+          "fontStyle": "", // set to empty string to disable underline, which is the default
+        },
+      }
+    },
+  }
+  
