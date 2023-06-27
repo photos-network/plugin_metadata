@@ -9,6 +9,7 @@ use abi_stable::{
     sabi_trait::prelude::TD_Opaque,
     std_types::{ROk, RResult, RString},
 };
+use tracing::{error, Level};
 
 use photos_network_plugin::{PluginCommand, PluginId};
 use photos_network_plugin::Error;
@@ -17,6 +18,7 @@ use photos_network_plugin::Plugin_TO;
 use photos_network_plugin::PluginType;
 use photos_network_plugin::PluginFactory_Ref;
 use photos_network_plugin::PluginFactory;
+use tracing_subscriber::FmtSubscriber;
 
 #[export_root_module]
 fn instantiate_root_module() -> PluginFactory_Ref {
@@ -35,8 +37,23 @@ struct MetadataPlugin {
 }
 
 impl Plugin for MetadataPlugin {
+    fn plugin_domain(&self,) -> RString where {
+        self.plugin_id.clone()
+    }
+
     fn on_core_init(&self) -> RResult<RString, Error> {
-        ROk(RString::from(""))
+        let file_appender = tracing_appender::rolling::daily("./logs", "plugin_metadata");
+        let (file_writer, _guard) = tracing_appender::non_blocking(file_appender);
+        let subscriber = FmtSubscriber::builder()
+            .with_max_level(Level::TRACE)
+            .with_writer(file_writer)
+            .finish();
+        tracing::subscriber::set_global_default(subscriber).expect("setting default subscriber failed");
+ 
+    
+        println!("pluin_metadata: on_core_init println");
+        error!("pluin_metadata: on_core_init trace");
+        ROk(RString::from("String from init."))
     }
 
     fn on_core_started(&self) -> RResult<RString, Error> {
