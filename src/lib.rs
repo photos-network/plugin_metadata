@@ -37,12 +37,9 @@ struct MetadataPlugin {
 }
 
 impl Plugin for MetadataPlugin {
-    fn plugin_domain(&self,) -> RString where {
-        self.plugin_id.clone()
-    }
-
     fn on_core_init(&self) -> RResult<RString, Error> {
-        let file_appender = tracing_appender::rolling::daily("./logs", "plugin_metadata");
+        let logfile = format!("{}{}", "plugin_", self.plugin_id.as_str());
+        let file_appender = tracing_appender::rolling::daily("./logs", logfile);
         let (file_writer, _guard) = tracing_appender::non_blocking(file_appender);
         let subscriber = FmtSubscriber::builder()
             .with_max_level(Level::TRACE)
